@@ -9,6 +9,7 @@ target("RandomAccess")
     set_kind("binary")
     add_files("src/RandomAccess/*.c")
     set_languages("c17")
+    set_warnings("all", "error")
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
