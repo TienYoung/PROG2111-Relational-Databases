@@ -2,7 +2,12 @@ add_rules("mode.debug", "mode.release")
 
 target("SequentialAccess")
     set_kind("binary")
-    add_files("SequentialAccess/src/*.c")
+    add_files("src/SequentialAccess/*.c")
+    set_languages("c17")
+
+target("RandomAccess")
+    set_kind("binary")
+    add_files("src/RandomAccess/*.c")
     set_languages("c17")
 
 --
