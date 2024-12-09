@@ -100,13 +100,33 @@ void update(MYSQL* object, const char* table)
 		contactnumber, email, address, firstname, lastname);
 
 	if (mysql_query(object, updateQuery) != 0) {
-		fprintf(stderr, "Failed to update customer information: %s\n", mysql_error(object));
+		fprintf(stderr, "Failed to update user information: %s\n", mysql_error(object));
 	}
 	else {
-		printf("Customer information updated successfully.\n");
+		printf("User information updated successfully.\n");
 	}
 }
 
+void delete(MYSQL* object, const char* table)
+{
+	char firstname[VARCHAR] = "";
+	char lastname[VARCHAR] = "";
+
+	// Collect user name to be deleted
+	getValidInput("Enter First Name: ", "%s", firstname);
+	getValidInput("Enter Last Name: ", "%s", lastname);
+
+	// Delete customer record from the database
+	char query[MAX_CHARS];
+	snprintf(query, sizeof(query), "DELETE FROM `User` WHERE firstname='%s' AND lastname='%s'", firstname, lastname);
+
+	if (mysql_query(object, query) != 0) {
+		fprintf(stderr, "Failed to delete customer record: %s\n", mysql_error(object));
+	}
+	else {
+		printf("Customer record deleted successfully.\n");
+	}
+}
 
 void addNewRentalTransaction(MYSQL* object);
 void updateCustomerInfo(MYSQL* object);

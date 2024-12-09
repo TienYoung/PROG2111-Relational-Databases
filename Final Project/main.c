@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
             update(databaseObject, "User");
             break;
         case 3:
-            viewRentalHistory(databaseObject);
+            delete(databaseObject, "User");
             break;
         case 4:
             deleteCustomerRecord(databaseObject);
