@@ -1,7 +1,7 @@
 /*
-* FILE : a3.h
-* PROJECT : Movie Rental System
-* PROGRAMMER : GROUP 7
+* FILE : crud.h
+* PROJECT : PROG2111 - Final Project
+* PROGRAMMERS : Group 7; Justin, Valentyn, Ahmed, Tian
 * FIRST VERSION : 2024-11-29
 * DESCRIPTION :
 * This header file declares functions and constants used in the Movie Rental System program.
@@ -195,14 +195,6 @@ void delete(MYSQL* object, const char* table)
 		printf("Customer record deleted successfully.\n");
 	}
 }
-
-void addNewRentalTransaction(MYSQL* object);
-void updateCustomerInfo(MYSQL* object);
-void viewRentalHistory(MYSQL* object);
-void deleteCustomerRecord(MYSQL* object);
-
-/*prints the menu*/
-void menu();
 
 /*
 * FUNCTION : getValidInput
