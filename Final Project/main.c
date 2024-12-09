@@ -69,8 +69,11 @@ int main(int argc, char* argv[]) {
             delete(databaseObject, "User");
             break;
         case 4:
-            deleteCustomerRecord(databaseObject);
+            create(databaseObject, "Loan");
             break;
+		case 5:
+			read(databaseObject, "Loan");
+			break;
         case 0:
             printf("Exiting the program.\n");
             break;

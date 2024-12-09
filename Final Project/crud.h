@@ -36,8 +36,8 @@ void insertUser(MYSQL* object)
 	char membershidate[DATE_CHARS] = "";
 
 	// Collect essential user information.
-	getValidInput("Enter first name: ", "%s", &firstname);
-	getValidInput("Enter last name: ", "%s", &lastname);
+	getValidInput("Enter First Name: ", "%[^\n]", firstname);
+	getValidInput("Enter Last Name: ", "%[^\n]", lastname);
 
 	time_t t = time(NULL); // Get current time
 	struct tm* tm_info = localtime(&t); // Convert to local time structure
@@ -49,11 +49,40 @@ void insertUser(MYSQL* object)
 		"INSERT INTO `User` (firstname, lastname, membershipdate) VALUES ('%s', '%s', '%s')",
 		firstname, lastname, membershidate);
 
-	if (mysql_query(object, query) == 0) {
-		printf("User added successfully.\n");
+	if (mysql_query(object, query) != 0) {
+		fprintf(stderr, "Failed to add User: %s\n", mysql_error(object));
 	}
 	else {
-		fprintf(stderr, "Failed to add User: %s\n", mysql_error(object));
+		printf("User added successfully.\n");
+	}
+}
+
+void insertLoan(MYSQL* object)
+{
+	char firstname[VARCHAR] = "";
+	char lastname[VARCHAR] = "";
+	char booktitle [VARCHAR] = "";
+
+	// Collect essential user information.
+	getValidInput("Enter First Name: ", "%[^\n]", firstname);
+	getValidInput("Enter Last Name: ", "%[^\n]", lastname);
+	getValidInput("Enter Book Title: ", "%[^\n]", booktitle);
+
+	// Insert User into the database
+	char query[MAX_CHARS] = "";
+	snprintf(query, MAX_CHARS,
+		"INSERT INTO Loan (BookId, UserId) \
+		VALUES( \
+			(SELECT BookId FROM Book WHERE title = '%s' LIMIT 1), \
+			(SELECT UserId FROM `User` WHERE firstname = '%s' AND lastname = '%s' LIMIT 1) \
+		)",
+		booktitle, firstname, lastname);
+
+	if (mysql_query(object, query) != 0) {
+		fprintf(stderr, "Failed to add Loan: %s\n", mysql_error(object));
+	}
+	else {
+		printf("Loan added successfully.\n");
 	}
 }
 
@@ -63,11 +92,50 @@ void create(MYSQL* object, const char* table)
 	{
 		insertUser(object);
 	}
+	else if (strcmp(table, "Loan") == 0)
+	{
+		insertLoan(object);
+	}
 }
 
 void read(MYSQL* object, const char* table)
 {
+	char firstname[VARCHAR] = "";
+	char lastname[VARCHAR] = "";
 
+	// Collect essential user information.
+	getValidInput("Enter First Name: ", "%[^\n]", firstname);
+	getValidInput("Enter Last Name: ", "%[^\n]", lastname);
+
+	// Insert User into the database
+	char query[MAX_CHARS] = "";
+	snprintf(query, MAX_CHARS,
+		"SELECT L.loanid, firstname, lastname, title FROM Loan L \
+		INNER JOIN `User` U ON L.userid = U.userid              \
+		INNER JOIN Book B ON B.bookid = L.bookid                \
+		WHERE firstname='%s' AND lastname='%s'",
+		firstname, lastname);
+
+	if (mysql_query(object, query) != 0) {
+		fprintf(stderr, "Failed to add User: %s\n", mysql_error(object));
+		return;
+	}
+
+	MYSQL_RES* resultSet = mysql_store_result(object);
+	if (resultSet == NULL)
+	{
+		printf("Failed to get the result set: Error: %s\n", mysql_error(object));
+		return;
+	}
+
+	// Display the rental history
+	MYSQL_ROW row;
+	printf("\nLoan History:\n");
+	while ((row = mysql_fetch_row(resultSet)) != NULL) {
+		printf("Loan ID: %s, First Name: %s, Last Name: %s, Book Title: %s\n", row[0], row[1], row[2], row[3]);
+	}
+
+	mysql_free_result(resultSet);
 }
 
 void update(MYSQL* object, const char* table)
@@ -79,11 +147,11 @@ void update(MYSQL* object, const char* table)
 	char address[VARCHAR] = "";
 
 	// Collect updated User information
-	getValidInput("Enter First Name: ", "%s", firstname);
-	getValidInput("Enter Last Name: ", "%s", lastname);
-	getValidInput("Enter New Contact Number: ", "%s", contactnumber);
-	getValidInput("Enter New Email: ", "%s", email);
-	getValidInput("Enter New Address: ", "%s", &address);
+	getValidInput("Enter First Name: ", "%[^\n]", firstname);
+	getValidInput("Enter Last Name: ", "%[^\n]", lastname);
+	getValidInput("Enter New Contact Number: ", "%[^\n]", contactnumber);
+	getValidInput("Enter New Email: ", "%[^\n]", email);
+	getValidInput("Enter New Address: ", "%[^\n]", address);
 
 		//char selectQuery[MAX_CHARS] = "";
 	//snprintf(selectQuery, MAX_CHARS,
@@ -113,8 +181,8 @@ void delete(MYSQL* object, const char* table)
 	char lastname[VARCHAR] = "";
 
 	// Collect user name to be deleted
-	getValidInput("Enter First Name: ", "%s", firstname);
-	getValidInput("Enter Last Name: ", "%s", lastname);
+	getValidInput("Enter First Name: ", "%[^\n]", firstname);
+	getValidInput("Enter Last Name: ", "%[^\n]", lastname);
 
 	// Delete customer record from the database
 	char query[MAX_CHARS];

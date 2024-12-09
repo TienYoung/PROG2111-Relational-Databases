@@ -1,5 +1,13 @@
 add_rules("mode.debug", "mode.release")
 
+target("main")
+    set_kind("binary")
+    add_files("src/main.c")
+    add_includedirs("C:\\Program Files\\MySQL\\MySQL Server 8.0\\include")
+    add_linkdirs("C:\\Program Files\\MySQL\\MySQL Server 8.0\\lib")
+    add_links("mysqlclient.lib")
+    set_languages("c17")
+
 target("SequentialAccess")
     set_kind("binary")
     add_files("src/SequentialAccess/*.c")
