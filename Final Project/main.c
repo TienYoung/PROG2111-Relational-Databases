@@ -13,6 +13,7 @@
 #include "crud.h"
 
 void mainMenu();
+void createMenu();
 void readMenu();
 
 MYSQL* databaseObject = NULL;
@@ -87,7 +88,7 @@ void mainMenu()
 		// Handle the user's choice
 		switch (choice) {
 		case 1:
-			create(databaseObject, "User");
+			createMenu();
 			break;
 		case 2:
 			readMenu();
@@ -103,6 +104,59 @@ void mainMenu()
 			break;
 		default:
 			printf("Invalid choice. Please try again.\n");
+			break;
+		}
+	} while (choice != 0);
+}
+
+void createMenu() {
+	int choice = 0;
+	do
+	{
+		printf("*** Book Library System Create Menu***\n");
+		printf("1. Author\n");
+		printf("2. Book\n");
+		printf("3. Building\n");
+		printf("4. Employee\n");
+		printf("5. Genre\n");
+		printf("6. Publisher\n");
+		printf("7. Reservation\n");
+		printf("8. User\n");
+		printf("0. Return\n");
+
+		getValidInput("Enter your choice: ", "%d", &choice);  // Get user input for menu choice
+		// Handle the user's choice
+		switch (choice)
+		{
+		case 1:
+			insert(selectAll(databaseObject, "Author"), databaseObject);
+			break;
+		case 2:
+			insert(selectAll(databaseObject, "Book"), databaseObject);
+			break;
+		case 3:
+			insert(selectAll(databaseObject, "Building"), databaseObject);
+			break;
+		case 4:
+			insert(selectAll(databaseObject, "Employee"), databaseObject);
+			break;
+		case 5:
+			insert(selectAll(databaseObject, "Genre"), databaseObject);
+			break;
+		case 6:
+			insert(selectAll(databaseObject, "Publisher"), databaseObject);
+			break;
+		case 7:
+			insert(selectAll(databaseObject, "Reservation"), databaseObject);
+			break;
+		case 8:
+			insert(selectAll(databaseObject, "User"), databaseObject);
+			break;
+		case 0:
+			putchar('\n');
+			break;
+		default:
+			printf("Invalid choice.\n");
 			break;
 		}
 	} while (choice != 0);

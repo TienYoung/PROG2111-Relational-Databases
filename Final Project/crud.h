@@ -116,6 +116,86 @@ MYSQL_RES* selectAll(MYSQL* object, const char* table)
 	return result;
 }
 
+void insert(MYSQL_RES* result, MYSQL* object)
+{
+	char query[MAX_CHARS] = "INSERT INTO ";
+
+	MYSQL_FIELD* fields = mysql_fetch_field(result);
+	unsigned int numFields = mysql_num_fields(result);
+	if (numFields > 0)
+	{
+		strcat_s(query, MAX_CHARS, fields[1].table);
+	}
+	else
+	{
+		return;
+	}
+
+	// Allocate memory for array of strings;
+	char** rows = malloc(numFields * sizeof(char*));
+	for(unsigned int i =0; i < numFields; i++)
+	{
+		if (i == 0)
+		{
+			strcat_s(query, MAX_CHARS, " (");
+		}
+
+		if ((fields[i].type & NOT_NULL_FLAG) && ((fields[i].type & PRI_KEY_FLAG) == 0))
+		{
+			rows[i] = malloc(VARCHAR * sizeof(char));
+
+			printf("Enter %s", fields[i].name);
+			getValidInput(": ", "%[^\n]", rows[i]);
+
+			strcat_s(query, MAX_CHARS, fields[i].name);
+			if (i < (numFields - 1))
+			{
+				strcat_s(query, MAX_CHARS, ", ");
+			}
+			else
+			{
+				strcat_s(query, MAX_CHARS, ") ");
+			}
+		}
+		else
+		{
+			rows[i] = NULL;
+		}
+	}
+
+	// Concate then free array of strings;
+	for (unsigned int i = 0; i < numFields; i++)
+	{
+		if (i == 0)
+		{
+			strcat_s(query, MAX_CHARS, "VALUES (");
+		}
+		if (rows[i] != NULL)
+		{
+			strcat_s(query, MAX_CHARS, "'");
+			strcat_s(query, MAX_CHARS, rows[i]);
+			strcat_s(query, MAX_CHARS, "'");
+			if (i < (numFields - 1))
+			{
+				strcat_s(query, MAX_CHARS, ", ");
+			}
+			else
+			{
+				strcat_s(query, MAX_CHARS, ") ");
+			}
+			free(rows[i]);
+		}
+	}
+	free(rows);
+
+	if (mysql_query(object, query) != 0) {
+		fprintf(stderr, "Failed to add Loan: %s\n", mysql_error(object));
+	}
+	else {
+		printf("Loan added successfully.\n");
+	}
+}
+
 void printResult(MYSQL_RES* result)
 {
 	MYSQL_FIELD* field;
