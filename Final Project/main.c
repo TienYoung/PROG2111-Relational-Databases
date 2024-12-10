@@ -12,8 +12,10 @@
 
 #include "crud.h"
 
-// Function Declarations
-void menu();
+void mainMenu();
+void readMenu();
+
+MYSQL* databaseObject = NULL;
 
 /*
 * FUNCTION : main
@@ -33,7 +35,7 @@ int main(int argc, char* argv[]) {
     const char* defaultDatabase = "booklibrary";
 
     // 1.Initialize a database connection object
-    MYSQL* databaseObject = mysql_init(NULL);
+    databaseObject = mysql_init(NULL);
 
 	if (databaseObject == NULL)
 	{
@@ -47,35 +49,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    int choice;
-    do {
-        menu();  // Display the menu
-        getValidInput("Enter your choice: ", "%d", &choice);  // Get user input for menu choice
-
-        // Handle the user's choice
-        switch (choice) {
-        case 1:
-            create(databaseObject, "User");
-            break;
-        case 2:
-            update(databaseObject, "User");
-            break;
-        case 3:
-            delete(databaseObject, "User");
-            break;
-        case 4:
-            create(databaseObject, "Loan");
-            break;
-		case 5:
-			read(databaseObject, "Loan");
-			break;
-        case 0:
-            printf("Exiting the program.\n");
-            break;
-        default:
-            printf("Invalid choice. Please try again.\n");
-        }
-    } while (choice != 0);  // Repeat until user chooses to exit
+	mainMenu();
 
     mysql_close(databaseObject);  // Close the database connection
     return 0;
@@ -95,4 +69,94 @@ void menu() {
     printf("4. Create a loan\n");
     printf("5. Print loans by a user\n");
     printf("0. Exit\n");
+}
+
+void mainMenu() 
+{
+	int choice = 0;
+	do
+	{
+		printf("*** Book Library System Main Menu***\n");
+		printf("1. Create\n");
+		printf("2. Read\n");
+		printf("3. Update\n");
+		printf("4. Delete\n");
+		printf("0. Exit\n");
+
+		getValidInput("Enter your choice: ", "%d", &choice);  // Get user input for menu choice
+		// Handle the user's choice
+		switch (choice) {
+		case 1:
+			create(databaseObject, "User");
+			break;
+		case 2:
+			readMenu();
+			break;
+		case 3:
+			delete(databaseObject, "User");
+			break;
+		case 4:
+			create(databaseObject, "Loan");
+			break;
+		case 0:
+			printf("Exiting the program.\n");
+			break;
+		default:
+			printf("Invalid choice. Please try again.\n");
+			break;
+		}
+	} while (choice != 0);
+}
+
+void readMenu() {
+	int choice = 0;
+	do
+	{
+		printf("*** Book Library System Read Menu***\n");
+		printf("1. Author\n");
+		printf("2. Book\n");
+		printf("3. Building\n");
+		printf("4. Employee\n");
+		printf("5. Genre\n");
+		printf("6. Publisher\n");
+		printf("7. Reservation\n");
+		printf("8. User\n");
+		printf("0. Return\n");
+
+		getValidInput("Enter your choice: ", "%d", &choice);  // Get user input for menu choice
+		// Handle the user's choice
+		switch (choice)
+		{
+		case 1:
+			printResult(selectAll(databaseObject, "Author"));
+			break;
+		case 2:
+			printResult(selectAll(databaseObject, "Book"));
+			break;
+		case 3:
+			printResult(selectAll(databaseObject, "Building"));
+			break;
+		case 4:
+			printResult(selectAll(databaseObject, "Employee"));
+			break;
+		case 5:
+			printResult(selectAll(databaseObject, "Genre"));
+			break;
+		case 6:
+			printResult(selectAll(databaseObject, "Publisher"));
+			break;
+		case 7:
+			printResult(selectAll(databaseObject, "Reservation"));
+			break;
+		case 8:
+			printResult(selectAll(databaseObject, "User"));
+			break;
+		case 0:
+			putchar('\n');
+			break;
+		default:
+			printf("Invalid choice.\n");
+			break;
+		}
+	} while (choice != 0);
 }

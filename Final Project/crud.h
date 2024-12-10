@@ -98,6 +98,46 @@ void create(MYSQL* object, const char* table)
 	}
 }
 
+MYSQL_RES* selectAll(MYSQL* object, const char* table)
+{
+	char query[MAX_CHARS] = "";
+	snprintf(query, MAX_CHARS, "SELECT * FROM %s", table);
+
+	if (mysql_query(object, query) != 0) {
+		fprintf(stderr, "Failed to select %s: %s\n", table, mysql_error(object));
+		return NULL;
+	}
+
+	MYSQL_RES* result = mysql_store_result(object);
+	if (result == NULL)
+	{
+		fprintf(stderr, "Failed to get the result set: Error: %s\n", mysql_error(object));
+	}
+	return result;
+}
+
+void printResult(MYSQL_RES* result)
+{
+	MYSQL_FIELD* field;
+
+	while ((field = mysql_fetch_field(result)))
+	{
+		printf("%16s ", field->name);
+	}
+	putchar('\n');
+
+	size_t numFields = mysql_num_fields(result);
+	MYSQL_ROW row;
+	while ((row = mysql_fetch_row(result)) != NULL)
+	{
+		for (int i = 0; i < numFields; i++)
+		{
+			printf("%16s ", row[i]);
+		}
+		putchar('\n');
+	}
+}
+
 void read(MYSQL* object, const char* table)
 {
 	char firstname[VARCHAR] = "";
