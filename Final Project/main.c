@@ -15,6 +15,8 @@
 void mainMenu();
 void createMenu();
 void readMenu();
+void updateMenu();
+void deleteMenu();
 
 MYSQL* databaseObject = NULL;
 
@@ -94,10 +96,10 @@ void mainMenu()
 			readMenu();
 			break;
 		case 3:
-			delete(databaseObject, "User");
+			updateMenu();
 			break;
 		case 4:
-			create(databaseObject, "Loan");
+			//deleteMenu();
 			break;
 		case 0:
 			printf("Exiting the program.\n");
@@ -204,6 +206,68 @@ void readMenu() {
 			break;
 		case 8:
 			printResult(selectAll(databaseObject, "User"));
+			break;
+		case 0:
+			putchar('\n');
+			break;
+		default:
+			printf("Invalid choice.\n");
+			break;
+		}
+	} while (choice != 0);
+}
+
+void updateMenu() {
+	int choice = 0;
+	do
+	{
+		printf("*** Book Library System Update Menu***\n");
+		printf("1. Author\n");
+		printf("2. Book\n");
+		printf("3. Building\n");
+		printf("4. Employee\n");
+		printf("5. Genre\n");
+		printf("6. Publisher\n");
+		printf("7. Reservation\n");
+		printf("8. User\n");
+		printf("0. Return\n");
+
+		getValidInput("Enter your choice: ", "%d", &choice);  // Get user input for menu choice
+		// Handle the user's choice
+		char id[VARCHAR] = "";
+		switch (choice)
+		{
+		case 1:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "Author"), databaseObject, id);
+			break;
+		case 2:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "Book"), databaseObject, id);
+			break;
+		case 3:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "Building"), databaseObject, id);
+			break;
+		case 4:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "Employee"), databaseObject, id);
+			break;
+		case 5:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "Genre"), databaseObject, id);
+			break;
+		case 6:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "Publisher"), databaseObject, id);
+			break;
+		case 7:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "Reservation"), databaseObject, id);
+			break;
+		case 8:
+			getValidInput("Enter ID: ", "%[^\n]", id);
+			updateID(selectAll(databaseObject, "User"), databaseObject, id);
 			break;
 		case 0:
 			putchar('\n');

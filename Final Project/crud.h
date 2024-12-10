@@ -140,7 +140,7 @@ void insert(MYSQL_RES* result, MYSQL* object)
 			strcat_s(query, MAX_CHARS, " (");
 		}
 
-		if ((fields[i].type & NOT_NULL_FLAG) && ((fields[i].type & PRI_KEY_FLAG) == 0))
+		if ((fields[i].flags & NOT_NULL_FLAG) && ((fields[i].flags & PRI_KEY_FLAG) == 0))
 		{
 			rows[i] = malloc(VARCHAR * sizeof(char));
 
@@ -215,6 +215,85 @@ void printResult(MYSQL_RES* result)
 			printf("%16s ", row[i]);
 		}
 		putchar('\n');
+	}
+}
+
+void updateID(MYSQL_RES* result, MYSQL* object, const char* id)
+{
+	char query[MAX_CHARS] = "UPDATE ";
+
+	MYSQL_FIELD* fields = mysql_fetch_field(result);
+	unsigned int numFields = mysql_num_fields(result);
+	if (numFields > 0)
+	{
+		strcat_s(query, MAX_CHARS, fields[1].table);
+		strcat_s(query, MAX_CHARS, " SET ");
+	}
+	else
+	{
+		return;
+	}
+
+	// Allocate memory for array of strings;
+	char** rows = malloc(numFields * sizeof(char*));
+	char* primaryKey = NULL;
+	for (unsigned int i = 0; i < numFields; i++)
+	{
+		if ((fields[i].flags & PRI_KEY_FLAG) == 0)
+		{
+			if (fields[i].type == MYSQL_TYPE_VAR_STRING)
+			{
+				rows[i] = malloc(VARCHAR * sizeof(char));
+
+				printf("Enter %s", fields[i].name);
+				getValidInput(": ", "%[^\n]", rows[i]);
+
+				strcat_s(query, MAX_CHARS, fields[i].name);
+				strcat_s(query, MAX_CHARS, "=");
+				strcat_s(query, MAX_CHARS, "'");
+				strcat_s(query, MAX_CHARS, rows[i]);
+				strcat_s(query, MAX_CHARS, "'");
+
+				if (i < (numFields - 1))
+				{
+					strcat_s(query, MAX_CHARS, ", ");
+				}
+				else
+				{
+					strcat_s(query, MAX_CHARS, " ");
+				}
+			}
+			else
+			{
+				rows[i] = NULL;
+			}
+		}
+		else
+		{
+			primaryKey = fields[i].name;
+			rows[i] = NULL;
+		}
+	}
+	strcat_s(query, MAX_CHARS, "WHERE ");
+	strcat_s(query, MAX_CHARS, primaryKey);
+	strcat_s(query, MAX_CHARS, "=");
+	strcat_s(query, MAX_CHARS, id);
+
+	// Concate then free array of strings;
+	for (unsigned int i = 0; i < numFields; i++)
+	{
+		if (rows[i] != NULL)
+		{
+			free(rows[i]);
+		}
+	}
+	free(rows);
+
+	if (mysql_query(object, query) != 0) {
+		fprintf(stderr, "Failed to add Loan: %s\n", mysql_error(object));
+	}
+	else {
+		printf("Loan added successfully.\n");
 	}
 }
 
